@@ -1,24 +1,55 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
+import ReactPaginate from 'react-paginate';
 
-const Pagination = ({ setPageNumber, pageNumber }) => {
-  let prev = () => {
-    if (pageNumber===1)return;
-    setPageNumber((previousValue) => previousValue - 1);
-  };
-  let next = () => {
-    setPageNumber((previousValue)=> previousValue+1);
-  };
+
+const Pagination = ({ setPageNumber, pageNumber, info }) => {
+
+  const [width, setWidth] = useState(window.innerWidth);
+  console.log(width);
+  const updateWidth = () => {
+    setWidth(window.innerWidth);
+  }
+  useEffect(() => {
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+
 
   return (
-    <div className="container d-flex justify-content-center gap-5 my-5">
-      <button onClick={prev} className="btn btn-primary">
-        Prev
-      </button>
-      <button onClick={next} className="btn btn-primary">
-        Next
-      </button>
-    </div>
+    <>
+      <style jsx="true">
+        {`
+          @media (max-width: 768px) {
+            .next,
+            .prev {
+              display: none;
+            }
+            .pagination {
+              font-size: 12px;
+            }
+          }
+        `}
+      </style>
+      <ReactPaginate
+        className="pagination justify-content-center gap-4 my-4"
+        htmlForcePage={pageNumber === 1 ? 0 : pageNumber - 1}
+        pageCount={info?.pages}
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        pageRangeDisplayed={width < 576 ? 1 : 2}
+        marginPagesDisplayed={width < 576 ? 1 : 2}
+        nextLabel="Next"
+        nextClassName="btn btn-info next"
+        previousLabel="Prev"
+        previousClassName="btn btn-info prev"
+        activeClassName="active"
+        onPageChange={(data) => {
+          setPageNumber(data.selected + 1);
+        }}
+      />
+    </>
   );
 };
 
-export default Pagination
+
+export default Pagination;
